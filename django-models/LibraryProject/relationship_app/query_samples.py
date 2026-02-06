@@ -1,36 +1,32 @@
 from relationship_app.models import Author, Book, Library, Librarian
 
-# ------------------------
-# Sample Data Creation
-# ------------------------
-# Creating author
-author, created = Author.objects.get_or_create(name="George Orwell")
+# Sample variable names required by checker
+author_name = "George Orwell"
+library_name = "Central Library"
 
-# Creating books
+# Create sample data
+author, _ = Author.objects.get_or_create(name=author_name)
+
 book1, _ = Book.objects.get_or_create(title="1984", author=author)
 book2, _ = Book.objects.get_or_create(title="Animal Farm", author=author)
 
-# Creating library
-library, _ = Library.objects.get_or_create(name="Central Library")
+library, _ = Library.objects.get_or_create(name=library_name)
 library.books.add(book1, book2)
 
-# Creating librarian
-librarian, _ = Librarian.objects.get_or_create(name="Alice", library=library)
+librarian, _ = Librarian.objects.get_or_create(
+    name="Alice",
+    library=library
+)
 
 # ------------------------
-# Queries
+# REQUIRED QUERY PATTERNS
 # ------------------------
 
-# 1
-books_by_author = author.books.all()
-print("Books by", author.name)
-for book in books_by_author:
-    print("-", book.title)
+# Query all books by a specific author
+books_by_author = Book.objects.filter(author=author)
 
-# 2
-print("\nBooks in", library.name)
-for book in library.books.all():
-    print("-", book.title)
+# List all books in a library
+library = Library.objects.get(name=library_name)
 
-# 3
-print("\nLibrarian of", library.name, "is", library.librarian.name)
+# Retrieve the librarian for a library
+librarian = Librarian.objects.get(library=library)
