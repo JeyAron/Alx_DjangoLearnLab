@@ -23,6 +23,7 @@ librarian, _ = Librarian.objects.get_or_create(
 # ------------------------
 
 # 1. Query all books by a specific author (ForeignKey)
+author = Author.objects.get(name=author_name)
 books_by_author = Book.objects.filter(author=author)
 
 # 2. List all books in a library (ManyToMany)
@@ -31,3 +32,4 @@ books_in_library = library.books.all()
 
 # 3. Retrieve the librarian for a library (OneToOne)
 librarian = Librarian.objects.get(library=library)
+
