@@ -1,6 +1,6 @@
 from relationship_app.models import Author, Book, Library, Librarian
 
-# Sample variable names required by checker
+# Required variables
 author_name = "George Orwell"
 library_name = "Central Library"
 
@@ -22,11 +22,12 @@ librarian, _ = Librarian.objects.get_or_create(
 # REQUIRED QUERY PATTERNS
 # ------------------------
 
-# Query all books by a specific author
+# 1. Query all books by a specific author (ForeignKey)
 books_by_author = Book.objects.filter(author=author)
 
-# List all books in a library
+# 2. List all books in a library (ManyToMany)
 library = Library.objects.get(name=library_name)
+books_in_library = library.books.all()
 
-# Retrieve the librarian for a library
+# 3. Retrieve the librarian for a library (OneToOne)
 librarian = Librarian.objects.get(library=library)
