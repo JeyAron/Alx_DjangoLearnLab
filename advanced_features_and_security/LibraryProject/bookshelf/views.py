@@ -4,6 +4,8 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required, login_required
 from .models import Book
+from .forms import BookForm
+from django.db.models import Q
 
 """
 PERMISSIONS & GROUP SETUP GUIDE
@@ -32,6 +34,24 @@ Groups Created:
 Views are protected using Django's @permission_required decorator.
 If a user lacks permission, a 403 error is raised.
 """
+def book_list(request):
+    query = request.GET.get("q")
+
+    if query:
+        books = Book.objects.filter(title__icontains=query)
+    else:
+        books = Book.objects.all()
+
+    return render(request, "bookshelf/book_list.html", {"books": books})
+
+def create_book(request):
+    if request.method == "POST":
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = BookForm()
+    return render(request, "bookshelf/form_example.html", {"form": form})
 
 @login_required
 @permission_required("bookshelf.can_view", raise_exception=True)
