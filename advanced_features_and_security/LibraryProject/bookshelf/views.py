@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import permission_required, login_required
 from .models import Book
 from .forms import BookForm
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_protect
 
 """
 PERMISSIONS & GROUP SETUP GUIDE
@@ -34,6 +35,17 @@ Groups Created:
 Views are protected using Django's @permission_required decorator.
 If a user lacks permission, a 403 error is raised.
 """
+@csrf_protect
+def create_book(request):
+    if request.method == "POST":
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("book_list")
+    else:
+        form = ExampleForm()
+    return render(request, "bookshelf/form_example.html", {"form": form})
+
 def book_list(request):
     query = request.GET.get("q")
 
