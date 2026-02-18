@@ -7,6 +7,7 @@ from .models import Book
 from .forms import BookForm
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_protect
+from .forms import ExampleForm
 
 """
 PERMISSIONS & GROUP SETUP GUIDE
