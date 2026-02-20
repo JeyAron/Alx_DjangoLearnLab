@@ -3,6 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 from .models import Book
 from .serializers import BookSerializer
 import datetime
@@ -13,6 +15,11 @@ class BookListView(generics.ListAPIView):
     GET /books/
     Returns a list of all books.
 
+    Advanced Features:
+    - Filtering by title, author, publication_year
+    - Searching by title and author name
+    - Ordering by title and publication_year
+
     Permissions:
     - Read-only access for everyone.
     """
@@ -20,6 +27,13 @@ class BookListView(generics.ListAPIView):
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['title', 'publication_year', 'author']
+
+    search_fields = ['title', 'author__name']
+
+    ordering_fields = ['title', 'publication_year']
+    ordering = ['title']
 
 class BookDetailView(generics.RetrieveAPIView):
     """
