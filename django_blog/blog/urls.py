@@ -6,7 +6,7 @@ from .views import (
     CommentCreateView, CommentUpdateView, CommentDeleteView,
 )
 
-urlpatterns = [
+urlpatterns += [
     path('register/', views.register_view, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='blog/login.html'), name='login'),
     path('logout/', views.logout_view, name='logout'),

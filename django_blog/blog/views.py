@@ -13,9 +13,12 @@ from django.db.models import Q
 from taggit.models import Tag
 
 # Create your views here.
+from django.views.generic import ListView
+from .models import Post
+
 class TagPostsView(ListView):
     model = Post
-    template_name = 'blog/tag_posts.html'  # create this template
+    template_name = 'blog/tag_posts.html'
     context_object_name = 'posts'
 
     def get_queryset(self):
