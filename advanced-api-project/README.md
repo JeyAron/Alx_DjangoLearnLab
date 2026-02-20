@@ -50,3 +50,19 @@ Filtering backend:
 - SearchFilter
 - OrderingFilter
 
+# API Testing
+
+Tests are written using Django's APITestCase.
+
+Test Coverage Includes:
+- CRUD operations
+- Filtering
+- Searching
+- Ordering
+- Permission enforcement
+
+Run tests with:
+
+python manage.py test api
+
+A separate test database is automatically created and destroyed during testing.
