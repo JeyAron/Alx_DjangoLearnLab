@@ -16,6 +16,15 @@ from taggit.models import Tag
 from django.views.generic import ListView
 from .models import Post
 
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/posts_by_tag.html'  # adjust template name if needed
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        slug = self.kwargs['tag_slug']
+        return Post.objects.filter(tags__slug=slug)
+
 class TagPostsView(ListView):
     model = Post
     template_name = 'blog/tag_posts.html'
