@@ -10,8 +10,18 @@ from .models import Post
 from .models import Comment
 from .forms import CommentForm
 from django.db.models import Q
+from taggit.models import Tag
 
 # Create your views here.
+class TagPostsView(ListView):
+    model = Post
+    template_name = 'blog/tag_posts.html'  # create this template
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        tag_name = self.kwargs['tag_name']
+        return Post.objects.filter(tags__name__iexact=tag_name)
+
 def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
