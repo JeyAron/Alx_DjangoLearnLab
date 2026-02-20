@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from .models import Post
 from .models import Comment
 from .forms import CommentForm
+from django.db.models import Q
 
 # Create your views here.
 def register_view(request):
@@ -87,9 +88,16 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     fields = ['title', 'content']
 
     def form_valid(self, form):
-        # Set logged-in user as author
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        
+        tags_input = form.cleaned_data['tags']
+        tag_list = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+
+        for tag_name in tag_list:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            self.object.tags.add(tag)
+
+        return response
 
 # Update a post (author only)
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -110,3 +118,33 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
+class SearchResultsView(ListView):
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct()
+        return Post.objects.none()
+
+class SearchResultsView(ListView):
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct()
+        return Post.objects.none()
