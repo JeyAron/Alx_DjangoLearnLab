@@ -6,6 +6,7 @@ User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -28,7 +29,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             profile_picture=validated_data.get('profile_picture')
         )
 
-        # Create token for the user
         Token.objects.create(user=user)
 
         return user
