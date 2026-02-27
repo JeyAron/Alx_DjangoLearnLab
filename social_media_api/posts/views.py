@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import viewsets, permissions, filters, status
+from rest_framework import viewsets, permissions, filters, status, generics
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.contenttypes.models import ContentType
 
@@ -21,7 +21,7 @@ def feed(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    post = generics.get_object_or_404(Post, pk=pk)
     like, created = Like.objects.get_or_create(user=request.user, post=post)
     if created:
         # Create notification
@@ -39,7 +39,7 @@ def like_post(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def unlike_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    post = generics.get_object_or_404(Post, pk=pk)
     deleted, _ = Like.objects.filter(user=request.user, post=post).delete()
     if deleted:
         return Response({"detail": "Post unliked"}, status=status.HTTP_200_OK)
@@ -66,7 +66,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
-        post = get_object_or_404(Post, pk=pk)
+        post = generics.get_object_or_404(Post, pk=pk)
         user = request.user
 
         if Like.objects.filter(user=user, post=post).exists():
@@ -86,7 +86,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def unlike(self, request, pk=None):
-        post = get_object_or_404(Post, pk=pk)
+        post = generics.get_object_or_404(Post, pk=pk)
         user = request.user
 
         like = Like.objects.filter(user=user, post=post)
