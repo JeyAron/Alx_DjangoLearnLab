@@ -37,6 +37,42 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    @action(detail=True, methods=["post"])
+    def like(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+
+        if Like.objects.filter(user=user, post=post).exists():
+            return Response({"detail": "Already liked."}, status=status.HTTP_400_BAD_REQUEST)
+
+        Like.objects.create(user=user, post=post)
+
+        # Create notification
+        if post.author != user:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=user,
+                verb="liked your post",
+                content_type=ContentType.objects.get_for_model(post),
+                object_id=post.id,
+            )
+
+        return Response({"detail": "Post liked."}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"])
+    def unlike(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+
+        like = Like.objects.filter(user=user, post=post)
+
+        if not like.exists():
+            return Response({"detail": "You haven't liked this post."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        like.delete()
+        return Response({"detail": "Post unliked."}, status=status.HTTP_200_OK)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by("-created_at")
