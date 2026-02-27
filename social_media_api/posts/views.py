@@ -15,6 +15,22 @@ def feed(request):
     serializer = PostSerializer(posts, many=True)
     return Response(serializer.data)
 
+def like_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    like, created = Like.objects.get_or_create(user=request.user, post=post)
+    if created:
+        return Response({"detail": "Post liked"}, status=status.HTTP_201_CREATED)
+    return Response({"detail": "You already liked this post"}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unlike_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    deleted, _ = Like.objects.filter(user=request.user, post=post).delete()
+    if deleted:
+        return Response({"detail": "Post unliked"}, status=status.HTTP_200_OK)
+    return Response({"detail": "You have not liked this post"}, status=status.HTTP_400_BAD_REQUEST)
+
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow owners to edit/delete.
