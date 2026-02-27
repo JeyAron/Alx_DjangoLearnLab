@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
 
@@ -9,7 +10,7 @@ class User(AbstractUser):
     followers = models.ManyToManyField(
         'self',
         symmetrical=False,
-        related_name='following',
+        related_name='followers',
         blank=True
     )
 
